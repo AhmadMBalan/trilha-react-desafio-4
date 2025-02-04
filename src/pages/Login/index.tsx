@@ -3,30 +3,38 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
 import { Container, LoginContainer, Column, Spacing, Title } from "./styles";
 import { defaultValues, IFormLogin } from "./types";
 
+// Define the validation schema
 const schema = yup
   .object({
     email: yup.string().email("E-mail inválido").required("Campo obrigatório"),
     password: yup
       .string()
-      .min(6, "No minimo 6 caracteres")
+      .min(6, "No mínimo 6 caracteres")
       .required("Campo obrigatório"),
   })
   .required();
 
 const Login = () => {
+  // Initialize useForm with the schema and options
   const {
     control,
+    handleSubmit,
     formState: { errors, isValid },
   } = useForm<IFormLogin>({
     resolver: yupResolver(schema),
-    mode: "onBlur",
+    mode: "onBlur", // Validate on blur
     defaultValues,
-    reValidateMode: "onChange",
+    reValidateMode: "onChange", // Re-validate on every change
   });
+
+  // Handle form submission
+  const onSubmit = (data: IFormLogin) => {
+    console.log("Form Data:", data);
+    // Add your login logic here (e.g., API call)
+  };
 
   return (
     <Container>
@@ -34,6 +42,7 @@ const Login = () => {
         <Column>
           <Title>Login</Title>
           <Spacing />
+          {/* Email Input */}
           <Input
             name="email"
             placeholder="Email"
@@ -41,6 +50,7 @@ const Login = () => {
             errorMessage={errors?.email?.message}
           />
           <Spacing />
+          {/* Password Input */}
           <Input
             name="password"
             type="password"
@@ -49,7 +59,12 @@ const Login = () => {
             errorMessage={errors?.password?.message}
           />
           <Spacing />
-          <Button title="Entrar" />
+          {/* Login Button */}
+          <Button
+            title="Entrar"
+            onClick={handleSubmit(onSubmit)} // Pass the submit handler
+            disabled={!isValid} // Disable the button if the form is invalid
+          />
         </Column>
       </LoginContainer>
     </Container>
